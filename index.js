@@ -8,7 +8,7 @@ const morgan = require('morgan')
 app.use(cors())
 app.use(express.json())
 
-const path = require('path');
+const path = require('path')
 const buildPath = path.join(__dirname, 'build')
 app.use(express.static(buildPath))
 
@@ -49,6 +49,32 @@ app.get('/api/persons/:id', (req, res) => {
     .then((person) => {
       if (person) {
         res.json(person)
+      } else {
+        res.status(404).send('Person not found')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      res.status(500).send('Internal server error')
+    })
+})
+
+app.put('/api/persons/:id', (req, res) => {
+  const { name, number } = req.body
+
+  if (!name || !number) {
+    return res.status(400).send('The name or number is missing');
+  }
+
+  const updatedPerson = {
+    name,
+    number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true, runValidators: true, context: 'query' })
+    .then((updated) => {
+      if (updated) {
+        res.json(updated)
       } else {
         res.status(404).send('Person not found')
       }
