@@ -23,7 +23,24 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then((persons) => {
-    res.json(persons);
+    res.json(persons)
+  })
+})
+
+app.post('/api/persons', (req, res) => {
+  const { name, number } = req.body
+
+  if (!name || !number) {
+    return res.status(400).send('The name or number is missing');
+  }
+
+  const newPerson = new Person({
+    name,
+    number,
+  });
+
+  newPerson.save().then((savedPerson) => {
+    res.status(201).json(savedPerson)
   })
 })
 
@@ -58,28 +75,6 @@ app.delete('/api/persons/:id', (req, res) => {
   Person.findByIdAndRemove(req.params.id)
     .then((result) => {
       res.status(204).end()
-    })
-    .catch((error) => {
-      console.log(error)
-      res.status(500).send('Internal server error')
-    })
-})
-
-app.post('/api/persons', (req, res) => {
-  const newPerson = req.body;
-
-  if (!newPerson.name || !newPerson.number) {
-    return res.status(400).send('The name or number is missing')
-  }
-
-  const person = new Person({
-    name: newPerson.name,
-    number: newPerson.number,
-  });
-
-  person.save()
-    .then((savedPerson) => {
-      res.status(201).json(savedPerson)
     })
     .catch((error) => {
       console.log(error)
