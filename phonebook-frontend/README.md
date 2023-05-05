@@ -2,5 +2,4 @@
 
 Salvatore Fadda
 
-Full Stack Web Development part2 - The Phonebook directory.
-Exercises 2.6 to 2.17
+Frontend of part 3.
