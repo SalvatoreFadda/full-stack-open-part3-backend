@@ -6,6 +6,10 @@ const morgan = require('morgan')
 app.use(cors())
 app.use(express.json())
 
+const path = require('path');
+const buildPath = path.join(__dirname, 'build')
+app.use(express.static(buildPath))
+
 morgan.token('body', (req, res) => {
   if (req.method === 'POST') {
     return JSON.stringify(req.body)
@@ -53,7 +57,7 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
-app.get('/info', (req, res) => {
+app.get('/api/info', (req, res) => {
   const currentTime = new Date().toISOString();
   const numPersons = persons.length;
   res.send(`<p>The phonebook has info for ${numPersons} people.</p><p>${currentTime}</p>`);
@@ -88,6 +92,10 @@ app.post('/api/persons', (req, res) => {
 
   persons.push(newPerson)
   res.status(201).json(newPerson);
+})
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 })
 
 const PORT = process.env.PORT || 3001;
